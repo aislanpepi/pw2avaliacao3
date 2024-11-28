@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/aislanpepi/pw2avaliacao3#readme",
   "dependencies": {
+    "express": "^4.21.1",
     "nodemon": "^3.1.7"
   }
 }
