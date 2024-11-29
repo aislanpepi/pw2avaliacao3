@@ -1,24 +1,24 @@
 import express from "express";
+import bcrypt from "bcryptjs";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const app = express();
 
-const livros = [
-    {
-        id: 1,
-        titulo: "A culpa é das estrelas!"
-    },
-    {
-        id: 2,
-        titulo: "The Witcher"
-    }
-]
+app.use(express.json());
 
-app.get("/",(req,res) => {
-    res.status(200).send("Hello World");
-});
+const alunos = [];
 
-app.get("/livros",(req,res) => {
-    res.status(200).json(livros);
+app.post('/register', async(req,res) => {
+    const {username,password} = req.body;
+
+    const hashedPassword = await bcrypt.hash(password,10);
+
+    alunos.push({username, password: hashedPassword});
+    console.log(alunos);
+
+    res.status(200).send("Aluno registrado!");
 });
 
 export default app;
