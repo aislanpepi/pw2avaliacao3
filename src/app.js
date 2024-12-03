@@ -56,7 +56,6 @@ app.post('/login',async(req,res) => {
 
 const authenticateJWT = (req,res,next) => {
     const authHeader = req.header('Authorization');
-    console.log('Authorization' + authHeader);
     let token;
 
     if(authHeader){
@@ -98,26 +97,56 @@ app.get('/alunos', (req,res) => {
 
 app.post('/alunos', (req,res) => {
     const {id,nome,ra,nota1,nota2} = req.body;
-
     if(!alunos.some(aluno => aluno.ra === ra)){
-
         alunos.push({id, nome, ra, nota1, nota2});
-
         res.status(201).json({"message": "Aluno registrado!"});
     } else {
         res.status(401).json({"message": "Aluno com o RA informado já está registrado!"});
     }
 });
 
-app.get('/medias', (req,res) => {
+app.get('/alunos/medias', (req,res) => {
     const medias = alunos.map(aluno => ({nome: aluno.nome,media: (aluno.nota1 + aluno.nota2)/2}));
     res.status(200).send(medias);
-})
+});
 
-app.get('/aprovados', (req,res) => {
+app.get('/alunos/aprovados', (req,res) => {
     const aprovados = alunos.map(aluno => ({nome: aluno.nome,status: (aluno.nota1 + aluno.nota2)/2 >= 6 ? "aprovado" : "repovado"}));
     res.status(200).send(aprovados);
-})
+});
+
+app.get('/alunos/:id', (req,res) => {
+    const index = buscaAluno(req.params.id);
+    res.status(200).json(alunos[index]);
+});
+
+app.put('/alunos/:id', (req,res) => {
+    const {nome,ra,nota1,nota2} = req.body;
+    const index = buscaAluno(req.params.id);
+    alunos[index].nome = nome;
+    alunos[index].ra = ra;
+    alunos[index].nota1 = nota1;
+    alunos[index].nota2 = nota2;
+    res.status(200).json(alunos[index]);
+});
+
+app.delete('/alunos/:id', (req,res) => {
+    const chooseId = Number(req.params.id);
+    const alunoEscolhido = alunos.find(aluno => aluno.id === chooseId);
+    if(!alunos.some(aluno => aluno.id === chooseId)){
+        return res.status(400).json({"message":"Id inexistente"});
+    }
+    const index = alunos.indexOf(alunoEscolhido);
+    alunos.splice(index,1);
+    return res.status(200).json({"message": "Aluno deletado com sucesso!"});
+});
+
+function buscaAluno(id){
+    return alunos.findIndex(aluno => {
+        return aluno.id === Number(id);
+    });
+}
+
 
 
 export default app;
