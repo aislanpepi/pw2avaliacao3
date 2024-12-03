@@ -23,7 +23,7 @@ const alunos = [
         "ra": "SC3948923",
         "nota1": 3.6,
         "nota2": 7
-      }     
+      }
 ];
 
 const users = [];
@@ -116,17 +116,22 @@ app.get('/alunos/aprovados', (req,res) => {
 });
 
 app.get('/alunos/:id', (req,res) => {
+    const chooseId = Number(req.params.id);
     const index = buscaAluno(req.params.id);
-    res.status(200).json(alunos[index]);
+    if(!alunos.some(aluno => aluno.id === chooseId)){
+        return res.status(404).json({"message":"Aluno não encontrado!"});
+    }
+    return res.status(200).json(alunos[index]);
 });
 
 app.put('/alunos/:id', (req,res) => {
     const {nome,ra,nota1,nota2} = req.body;
     const index = buscaAluno(req.params.id);
-    alunos[index].nome = nome;
-    alunos[index].ra = ra;
-    alunos[index].nota1 = nota1;
-    alunos[index].nota2 = nota2;
+    const aluno = alunos[index];
+    aluno.nome = nome;
+    aluno.ra = ra;
+    aluno.nota1 = nota1;
+    aluno.nota2 = nota2;
     res.status(200).json(alunos[index]);
 });
 
@@ -134,7 +139,7 @@ app.delete('/alunos/:id', (req,res) => {
     const chooseId = Number(req.params.id);
     const alunoEscolhido = alunos.find(aluno => aluno.id === chooseId);
     if(!alunos.some(aluno => aluno.id === chooseId)){
-        return res.status(400).json({"message":"Id inexistente"});
+        return res.status(404).json({"message":"Aluno não encontrado!"});
     }
     const index = alunos.indexOf(alunoEscolhido);
     alunos.splice(index,1);
@@ -146,7 +151,5 @@ function buscaAluno(id){
         return aluno.id === Number(id);
     });
 }
-
-
 
 export default app;
