@@ -33,7 +33,7 @@ app.post('/register', async(req,res) => {
     const hashedPassword = await bcrypt.hash(password,10);
 
     users.push({username, password: hashedPassword});
-    res.status(201).send("Usuario registrado!");
+    res.status(201).json({"message": "Usuario registrado!"});
 });
 
 app.post('/login',async(req,res) => {
@@ -127,6 +127,9 @@ app.get('/alunos/:id', (req,res) => {
 app.put('/alunos/:id', (req,res) => {
     const {nome,ra,nota1,nota2} = req.body;
     const index = buscaAluno(req.params.id);
+    if (index === -1){
+        return res.status(404).json({"message": "Aluno não encontrado!"});
+    }
     const aluno = alunos[index];
     aluno.nome = nome;
     aluno.ra = ra;
